@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "62597011586",
+    "firebase_url": "https://onlinebanking-6af2a.firebaseio.com",
+    "project_id": "onlinebanking-6af2a",
+    "storage_bucket": "onlinebanking-6af2a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:62597011586:android:271a91ca784924ab",
+        "android_client_info": {
+          "package_name": "com.example.onlinebanking"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "62597011586-24mo0muq10s7ed626d9alksv15o5tqri.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.onlinebanking",
+            "certificate_hash": "2e621368703d800ce7d2792c094e19c1aae2456f"
+          }
+        },
+        {
+          "client_id": "62597011586-374j0116e16918osbf4o0pfh780ld2j3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDU1LvPUK6WyCKCY5yJxTHOyMiGCpI57cA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "62597011586-374j0116e16918osbf4o0pfh780ld2j3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
