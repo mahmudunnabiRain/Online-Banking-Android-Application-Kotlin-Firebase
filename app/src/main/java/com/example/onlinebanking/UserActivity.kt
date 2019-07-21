@@ -158,6 +158,8 @@ class UserActivity : AppCompatActivity() {
                 }
                 MotionEvent.ACTION_UP -> {
                     imageView_toll_fee.setBackgroundResource(R.drawable.icon_menu_bg_custom_1)
+                    intent = Intent(this,TollFeeActivity::class.java)
+                    startActivity(intent)
                 }
             }
             return@OnTouchListener true
