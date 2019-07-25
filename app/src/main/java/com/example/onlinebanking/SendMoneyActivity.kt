@@ -163,7 +163,7 @@ class SendMoneyActivity : AppCompatActivity() {
     private fun sendMoney(myBalance: Int)
     {
         progressBar_sm_proceed.visibility = View.VISIBLE
-        //get client balance
+        //get client balance start
         val db = FirebaseFirestore.getInstance()
         val docRef = db.collection("users").document(editText_sm_client_number.text.toString())
         docRef.get()
@@ -225,6 +225,7 @@ class SendMoneyActivity : AppCompatActivity() {
 
                     Toast.makeText(this,"Transaction successful",Toast.LENGTH_SHORT).show()
                     progressBar_sm_proceed.visibility = View.INVISIBLE
+                    finish()
 
 
 
@@ -242,7 +243,7 @@ class SendMoneyActivity : AppCompatActivity() {
                 progressBar_sm_proceed.visibility = View.INVISIBLE
                 Toast.makeText(this,"Transaction failed, internet error, couldn't get client balance",Toast.LENGTH_SHORT).show()
             }
-        //get client balance
+        //get client balance end
     }
 
 

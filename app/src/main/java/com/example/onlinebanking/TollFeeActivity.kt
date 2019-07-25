@@ -77,7 +77,6 @@ class TollFeeActivity : AppCompatActivity() {
                     //initiate barcode scanner
                     IntentIntegrator(this).initiateScan()
 
-
                 }
             }
             return@OnTouchListener true
@@ -91,6 +90,87 @@ class TollFeeActivity : AppCompatActivity() {
                 }
                 MotionEvent.ACTION_UP -> {
                     button_tf_proceed.setBackgroundResource(R.drawable.button_bg_custom)
+                    if(!CheckInternet(this).checkNow())
+                    {
+                        return@OnTouchListener true
+                    }
+                    //check for valid toll booth name start
+                    db.collection("toll_booth")
+                        .get()
+                        .addOnSuccessListener { documents ->
+                            var found = false
+                            for (document in documents)
+                            {
+                                if(document.id == editText_tf_toll_booth.text.toString())
+                                {
+                                    found = true
+                                    //toll booth name is valid
+                                    if(editText_tf_enter_reg_no.text.length < 10)
+                                    {
+                                        editText_tf_enter_reg_no.error = "invalid registration number"
+                                        return@addOnSuccessListener
+                                    }
+                                    else
+                                    {
+                                        //valid registration number
+
+                                        //generate toll fee start
+                                        db.collection("toll_booth").document(editText_tf_toll_booth.text.toString())
+                                            .get()
+                                            .addOnSuccessListener { document ->
+                                                if (document[spinner_tf_select_vehicle_type.selectedItem.toString()] != null)
+                                                {
+                                                    val fee = document[spinner_tf_select_vehicle_type.selectedItem.toString()].toString().toInt()
+                                                    //checking balance
+                                                    val balanceRef = db.collection("users").document(FirebaseAuth.getInstance().currentUser?.phoneNumber.toString())
+                                                    balanceRef.get()
+                                                        .addOnSuccessListener {document ->
+                                                            if(document["balance"].toString().toInt() < fee)
+                                                            {
+                                                                Toast.makeText(this,"insufficient balance!\nfee for you ${spinner_tf_select_vehicle_type.selectedItem} is $fee taka",Toast.LENGTH_LONG).show()
+                                                                return@addOnSuccessListener
+                                                            }
+                                                            else
+                                                            {
+                                                                Toast.makeText(this,"Balance ${document["balance"].toString().toInt()}",Toast.LENGTH_SHORT).show()
+                                                                return@addOnSuccessListener
+                                                            }
+                                                        }
+                                                        .addOnFailureListener {
+                                                            Toast.makeText(this,"failed! try again",Toast.LENGTH_SHORT).show()
+                                                            finish()
+                                                        }
+                                                    //checking balance end
+                                                }
+                                                else
+                                                {
+                                                    Log.d("TollFeeActivity", "vehicle type not found")
+                                                }
+
+
+                                            }
+                                            .addOnFailureListener {
+                                                Log.d("TollFeeActivity", "get failed with ", it)
+                                                Toast.makeText(this,"failed ! try again",Toast.LENGTH_SHORT).show()
+                                                finish()
+                                            }
+                                        //generate toll fee end
+
+
+                                    }
+                                }
+                            }
+                            if(!found) { editText_tf_toll_booth.error = "invalid toll booth name" }
+                            else return@addOnSuccessListener
+                        }
+                        .addOnFailureListener {
+                            Log.d("TollFeeActivity","toll_booths_check failed")
+                            Toast.makeText(this,"toll booth name checking failed",Toast.LENGTH_SHORT).show()
+                        }
+                    //check for valid toll booth name end
+
+
+
 
                 }
             }

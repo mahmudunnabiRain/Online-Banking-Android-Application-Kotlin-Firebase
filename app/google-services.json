@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "62597011586-7sdrkoc1u5b30g2e0lg05n0g6hi3to25.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.onlinebanking",
+            "certificate_hash": "1efab2bed1522be056e3cf6914501d0315c23462"
+          }
+        },
+        {
           "client_id": "62597011586-24mo0muq10s7ed626d9alksv15o5tqri.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
