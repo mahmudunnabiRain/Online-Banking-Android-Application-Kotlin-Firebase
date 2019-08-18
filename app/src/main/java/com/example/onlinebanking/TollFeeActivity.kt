@@ -96,6 +96,7 @@ class TollFeeActivity : AppCompatActivity() {
                     {
                         return@OnTouchListener true
                     }
+
                     //check for valid toll booth name start
                     db.collection("toll_booth")
                         .get()
@@ -134,66 +135,77 @@ class TollFeeActivity : AppCompatActivity() {
                                                             }
                                                             else
                                                             {
-                                                                //update my balance
-                                                                db.collection("users").document(FirebaseAuth.getInstance().currentUser?.phoneNumber.toString()).update("balance", document["balance"].toString().toInt() - fee)
-                                                                    .addOnSuccessListener {
-                                                                    }
-                                                                    .addOnFailureListener {
-                                                                        Toast.makeText(this,"my balance update failed",Toast.LENGTH_SHORT).show()
-                                                                    }
-                                                                //update my balance finish
 
-                                                                //update my statement
-                                                                val myStatementData = hashMapOf(
-                                                                    "amount" to fee,
-                                                                    "client_number" to editText_tf_toll_booth.text.toString(),
-                                                                    "from" to "me",
-                                                                    "time" to Timestamp.now()
-                                                                )
-                                                                val txId  = "TID-TF-"+ Random.nextBytes(9)
-                                                                db.collection("users").document(FirebaseAuth.getInstance().currentUser?.phoneNumber.toString()).collection("statements").document(txId).set(myStatementData)
-                                                                    .addOnSuccessListener {
-                                                                    }
-                                                                    .addOnFailureListener {
-                                                                        Toast.makeText(this,"my statement update failed",Toast.LENGTH_SHORT).show()
-                                                                    }
-                                                                //finish update my statement
-
-                                                                //update client balance
-                                                                db.collection("toll_booth").document(editText_tf_toll_booth.text.toString())
-                                                                .get()
-                                                                    .addOnSuccessListener { document ->
-                                                                        db.collection("toll_booth").document(editText_tf_toll_booth.text.toString()).update("balance", document["balance"].toString().toInt()+ fee)
+                                                                //call security check
+                                                                val callBox = ConfirmPinDialog(this)
+                                                                callBox.show()
+                                                                callBox.setOnDismissListener {
+                                                                    if(callBox.confirmed)
+                                                                    {
+                                                                        //update my balance
+                                                                        db.collection("users").document(FirebaseAuth.getInstance().currentUser?.phoneNumber.toString()).update("balance", document["balance"].toString().toInt() - fee)
                                                                             .addOnSuccessListener {
-
                                                                             }
                                                                             .addOnFailureListener {
-                                                                                Toast.makeText(this,"client balance update failed",Toast.LENGTH_SHORT).show()
+                                                                                Toast.makeText(this,"my balance update failed",Toast.LENGTH_SHORT).show()
                                                                             }
+                                                                        //update my balance finish
 
-                                                                    }
-                                                                    .addOnFailureListener {  }
+                                                                        //update my statement
+                                                                        val myStatementData = hashMapOf(
+                                                                            "amount" to fee,
+                                                                            "client_number" to editText_tf_toll_booth.text.toString(),
+                                                                            "from" to "me",
+                                                                            "time" to Timestamp.now()
+                                                                        )
+                                                                        val txId  = "TID-TF-"+ Random.nextBytes(9)
+                                                                        db.collection("users").document(FirebaseAuth.getInstance().currentUser?.phoneNumber.toString()).collection("statements").document(txId).set(myStatementData)
+                                                                            .addOnSuccessListener {
+                                                                            }
+                                                                            .addOnFailureListener {
+                                                                                Toast.makeText(this,"my statement update failed",Toast.LENGTH_SHORT).show()
+                                                                            }
+                                                                        //finish update my statement
 
-                                                                //update client balance finish
+                                                                        //update client balance
+                                                                        db.collection("toll_booth").document(editText_tf_toll_booth.text.toString())
+                                                                            .get()
+                                                                            .addOnSuccessListener { document ->
+                                                                                db.collection("toll_booth").document(editText_tf_toll_booth.text.toString()).update("balance", document["balance"].toString().toInt()+ fee)
+                                                                                    .addOnSuccessListener {
 
-                                                                //update client statement
-                                                                val clientStatementData = hashMapOf(
-                                                                    "amount" to fee,
-                                                                    "client_number" to FirebaseAuth.getInstance().currentUser?.phoneNumber.toString(),
-                                                                    "from" to "client",
-                                                                    "vehicle_type" to spinner_tf_select_vehicle_type.selectedItem.toString(),
-                                                                    "regNo" to editText_tf_enter_reg_no.text.toString(),
-                                                                    "time" to Timestamp.now()
-                                                                )
-                                                                db.collection("toll_booth").document(editText_tf_toll_booth.text.toString()).collection("statements").document(txId).set(clientStatementData)
-                                                                    .addOnSuccessListener {
+                                                                                    }
+                                                                                    .addOnFailureListener {
+                                                                                        Toast.makeText(this,"client balance update failed",Toast.LENGTH_SHORT).show()
+                                                                                    }
+
+                                                                            }
+                                                                            .addOnFailureListener {  }
+
+                                                                        //update client balance finish
+
+                                                                        //update client statement
+                                                                        val clientStatementData = hashMapOf(
+                                                                            "amount" to fee,
+                                                                            "client_number" to FirebaseAuth.getInstance().currentUser?.phoneNumber.toString(),
+                                                                            "from" to "client",
+                                                                            "vehicle_type" to spinner_tf_select_vehicle_type.selectedItem.toString(),
+                                                                            "regNo" to editText_tf_enter_reg_no.text.toString(),
+                                                                            "time" to Timestamp.now()
+                                                                        )
+                                                                        db.collection("toll_booth").document(editText_tf_toll_booth.text.toString()).collection("statements").document(txId).set(clientStatementData)
+                                                                            .addOnSuccessListener {
+                                                                            }
+                                                                            .addOnFailureListener {
+                                                                                Toast.makeText(this,"client statement update failed",Toast.LENGTH_SHORT).show()
+                                                                            }
+                                                                        //finish client my statement
+                                                                        Toast.makeText(this,"Toll paid successfully",Toast.LENGTH_SHORT).show()
+                                                                        finish()
                                                                     }
-                                                                    .addOnFailureListener {
-                                                                        Toast.makeText(this,"client statement update failed",Toast.LENGTH_SHORT).show()
-                                                                    }
-                                                                //finish client my statement
-                                                                Toast.makeText(this,"Toll paid successfully",Toast.LENGTH_SHORT).show()
-                                                                finish()
+                                                                }
+                                                                //security check finish
+
 
                                                                 return@addOnSuccessListener
                                                             }
