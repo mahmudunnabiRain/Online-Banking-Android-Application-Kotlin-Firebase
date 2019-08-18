@@ -12,12 +12,14 @@ import android.widget.Adapter
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Toast
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.zxing.integration.android.IntentIntegrator
 import kotlinx.android.synthetic.main.activity_send_money_activity.*
 import kotlinx.android.synthetic.main.activity_toll_fee.*
 import kotlinx.android.synthetic.main.activity_toll_fee.progressBar_sm_proceed
+import kotlin.random.Random
 
 class TollFeeActivity : AppCompatActivity() {
 
@@ -132,7 +134,67 @@ class TollFeeActivity : AppCompatActivity() {
                                                             }
                                                             else
                                                             {
-                                                                Toast.makeText(this,"Balance ${document["balance"].toString().toInt()}",Toast.LENGTH_SHORT).show()
+                                                                //update my balance
+                                                                db.collection("users").document(FirebaseAuth.getInstance().currentUser?.phoneNumber.toString()).update("balance", document["balance"].toString().toInt() - fee)
+                                                                    .addOnSuccessListener {
+                                                                    }
+                                                                    .addOnFailureListener {
+                                                                        Toast.makeText(this,"my balance update failed",Toast.LENGTH_SHORT).show()
+                                                                    }
+                                                                //update my balance finish
+
+                                                                //update my statement
+                                                                val myStatementData = hashMapOf(
+                                                                    "amount" to fee,
+                                                                    "client_number" to editText_tf_toll_booth.text.toString(),
+                                                                    "from" to "me",
+                                                                    "time" to Timestamp.now()
+                                                                )
+                                                                val txId  = "TID-TF-"+ Random.nextBytes(9)
+                                                                db.collection("users").document(FirebaseAuth.getInstance().currentUser?.phoneNumber.toString()).collection("statements").document(txId).set(myStatementData)
+                                                                    .addOnSuccessListener {
+                                                                    }
+                                                                    .addOnFailureListener {
+                                                                        Toast.makeText(this,"my statement update failed",Toast.LENGTH_SHORT).show()
+                                                                    }
+                                                                //finish update my statement
+
+                                                                //update client balance
+                                                                db.collection("toll_booth").document(editText_tf_toll_booth.text.toString())
+                                                                .get()
+                                                                    .addOnSuccessListener { document ->
+                                                                        db.collection("toll_booth").document(editText_tf_toll_booth.text.toString()).update("balance", document["balance"].toString().toInt()+ fee)
+                                                                            .addOnSuccessListener {
+
+                                                                            }
+                                                                            .addOnFailureListener {
+                                                                                Toast.makeText(this,"client balance update failed",Toast.LENGTH_SHORT).show()
+                                                                            }
+
+                                                                    }
+                                                                    .addOnFailureListener {  }
+
+                                                                //update client balance finish
+
+                                                                //update client statement
+                                                                val clientStatementData = hashMapOf(
+                                                                    "amount" to fee,
+                                                                    "client_number" to FirebaseAuth.getInstance().currentUser?.phoneNumber.toString(),
+                                                                    "from" to "client",
+                                                                    "vehicle_type" to spinner_tf_select_vehicle_type.selectedItem.toString(),
+                                                                    "regNo" to editText_tf_enter_reg_no.text.toString(),
+                                                                    "time" to Timestamp.now()
+                                                                )
+                                                                db.collection("toll_booth").document(editText_tf_toll_booth.text.toString()).collection("statements").document(txId).set(clientStatementData)
+                                                                    .addOnSuccessListener {
+                                                                    }
+                                                                    .addOnFailureListener {
+                                                                        Toast.makeText(this,"client statement update failed",Toast.LENGTH_SHORT).show()
+                                                                    }
+                                                                //finish client my statement
+                                                                Toast.makeText(this,"Toll paid successfully",Toast.LENGTH_SHORT).show()
+                                                                finish()
+
                                                                 return@addOnSuccessListener
                                                             }
                                                         }

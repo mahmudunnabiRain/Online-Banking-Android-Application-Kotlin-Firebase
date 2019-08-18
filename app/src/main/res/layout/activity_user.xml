@@ -215,7 +215,7 @@
                 android:layout_marginRight="2dp"
                 android:layout_marginBottom="6dp"
                 android:background="@drawable/menu_bottom_text_custom"
-                android:text="Toll fee"
+                android:text="Pay toll"
                 android:gravity="center"
                 android:layout_width="68dp"
                 android:layout_height="16dp"
