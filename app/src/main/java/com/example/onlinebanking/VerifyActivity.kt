@@ -12,6 +12,7 @@ import android.widget.Toast
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.*
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.zxing.integration.android.IntentIntegrator
 import kotlinx.android.synthetic.main.activity_send_money_activity.*
 import kotlinx.android.synthetic.main.activity_verify.*
@@ -142,13 +143,32 @@ class VerifyActivity : AppCompatActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
-                    intent = Intent(this,SetNewPinActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK) //kills previous activities
-                    startActivity(intent)
-                    Log.d("VerifyActivity", "signInWithCredential:success")
+                    val docRef = FirebaseFirestore.getInstance().collection("users").document(FirebaseAuth.getInstance().currentUser?.phoneNumber.toString())
+                        docRef.get()
+                        .addOnSuccessListener { doc ->
+                            if(doc["balance"] == null)
+                            {
+                                docRef.update("balance",1000)
+                            }
 
-                    val user = task.result?.user
-                    // ...
+                            if(doc["pin"] == null)
+                            {
+                                intent = Intent(this,SetNewPinActivity::class.java)
+                                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK) //kills previous activities
+                                startActivity(intent)
+                                Log.d("VerifyActivity", "signInWithCredential:success")
+                            }
+                            else
+                            {
+                                intent = Intent(this,UserActivity::class.java)
+                                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK) //kills previous activities
+                                startActivity(intent)
+                                Log.d("VerifyActivity", "signInWithCredential:success")
+                            }
+
+                        }
+                        .addOnFailureListener {  }
+
                 } else {
                     // Sign in failed, display a message and update the UI
                     verify_progressBar.visibility = View.INVISIBLE
